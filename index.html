@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বয়স কত ? </title>
+    <title>বয়স কত ?</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -16,6 +16,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            position: relative;
         }
 
         .container {
@@ -78,6 +79,14 @@
             width: 100%;
         }
 
+        /* Footer buttons (Back and Site) */
+        .footer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
         .back-button, .site-button {
             background-color: #00f2fe;
             color: #000;
@@ -86,18 +95,11 @@
             font-size: 1rem;
             border-radius: 5px;
             cursor: pointer;
-            position: fixed;
-            z-index: 10;
+            transition: background-color 0.3s ease;
         }
 
-        .back-button {
-            top: 20px;
-            left: 20px;
-        }
-
-        .site-button {
-            top: 20px;
-            right: 20px;
+        .back-button:hover, .site-button:hover {
+            background-color: #4facfe;
         }
 
         @media (max-width: 768px) {
@@ -130,11 +132,6 @@
     </style>
 </head>
 <body>
-    <!-- Back and Site buttons -->
-    <button class="home-button" onclick="window.location.href='index.html';">Back</button>
-
-    <button class="site-button" onclick="window.location.href='https://bengeltigerwd.github.io/Bengal-Tiger-Website-Development-LTD/';">Our Official Site</button>
-
     <!-- Main content container -->
     <div class="container">
         <h1>বয়স কত ?</h1>
@@ -153,6 +150,12 @@
     <!-- Footer with developer info -->
     <div class="footer">
         <p>ডেভেলপার: <strong>আজমির আহমেদ</strong></p>
+
+        <!-- Footer buttons -->
+        <div class="footer-buttons">
+            <button class="back-button" onclick="window.location.href='index.html';">Back</button>
+            <button class="site-button" onclick="window.location.href='https://bengeltigerwd.github.io/Bengal-Tiger-Website-Development-LTD/';">Our Official Site</button>
+        </div>
     </div>
 
     <script>
@@ -233,22 +236,22 @@
             }
             var lastBirthdayDayOfWeek = lastBirthdayDate.toLocaleString('bn-BD', { weekday: 'long' });
 
-            // Show results with 2-second delay and sequentially
+            // Show results with delays
             setTimeout(async () => {
-                await showResult("result", `আপনার বয়স: ${ageYears} বছর ${ageMonths} মাস ${ageDays} দিন`);
+                await showResult("result", `আপনার বয়স: ${ageYears} বছর, ${ageMonths} মাস, ${ageDays} দিন`);
                 setTimeout(async () => {
-                    await showResult("timeDetails", `মোট সময় (ঘণ্টা): ${totalHours} ঘণ্টা<br>মোট সময় (মিনিট): ${totalMinutes} মিনিট<br>মোট সময় (সেকেন্ড): ${totalSeconds} সেকেন্ড<br>মোট দিন: ${totalDays} দিন`);
+                    await showResult("timeDetails", `মোট সময় (ঘণ্টা): ${totalHours} ঘণ্টা<br>মোট সময় (মিনিট): ${totalMinutes} মিনিট<br>মোট সময় (সেকেন্ড): ${totalSeconds} সেকেন্ড`);
                     setTimeout(async () => {
-                        await showResult("nextBirthday", `আপনার পরবর্তী জন্মদিন: ${nextBirthday.toLocaleDateString('bn-BD')} (${birthDayOfWeek})`);
+                        await showResult("nextBirthday", `পরবর্তী জন্মদিন: ${nextBirthday.toLocaleDateString('bn-BD')} (${nextBirthday.toLocaleString('bn-BD', { weekday: 'long' })})`);
                         setTimeout(async () => {
-                            await showResult("birthDetails", `আপনার জন্মদিনের দিন: ${birthDayOfWeek}`);
+                            await showResult("birthDetails", `আপনার জন্মদিন ছিল: ${birthDayOfWeek}`);
                             setTimeout(async () => {
                                 await showResult("lastBirthday", `গত জন্মদিন: ${lastBirthdayDate.toLocaleDateString('bn-BD')} (${lastBirthdayDayOfWeek})`);
-                            }, 2000);
-                        }, 2000);
-                    }, 2000);
-                }, 2000);
-            }, 2000);
+                            }, 1000);
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 1000);
         }
     </script>
 </body>
