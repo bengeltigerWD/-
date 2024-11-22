@@ -13,7 +13,8 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
         }
 
@@ -24,9 +25,7 @@
             text-align: center;
             max-width: 400px;
             margin-top: 30px;
-            margin-bottom: 20px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            flex: 1;
         }
 
         h1 {
@@ -67,24 +66,6 @@
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
             display: none;
-            animation: fadeIn 0.5s ease-in-out forwards;
-        }
-
-        .result-box p {
-            margin: 5px 0;
-            line-height: 1.5;
-            font-size: 1rem;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .footer {
@@ -93,34 +74,30 @@
             text-align: center;
             color: #00f2fe;
             font-size: 1rem;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .back-button, .site-button {
+            background-color: #00f2fe;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            position: fixed;
+            z-index: 10;
         }
 
         .back-button {
-            background-color: #00f2fe;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 5px;
-            position: fixed;
             top: 20px;
             left: 20px;
-            cursor: pointer;
-            z-index: 10;
         }
 
         .site-button {
-            background-color: #00f2fe;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 5px;
-            position: fixed;
             top: 20px;
             right: 20px;
-            cursor: pointer;
-            z-index: 10;
         }
 
         @media (max-width: 768px) {
@@ -133,8 +110,12 @@
                 font-size: 1.8rem;
             }
 
+            input[type="date"] {
+                font-size: 0.9rem;
+            }
+
             button {
-                font-size: 1rem;
+                font-size: 0.9rem;
                 padding: 10px;
             }
 
@@ -151,19 +132,21 @@
 <body>
     <!-- Back and Site buttons -->
     <button class="back-button" onclick="window.history.back();">Back</button>
-    <button class="site-button" onclick="window.location.href='https://bengeltigerwd.github.io/Bengal-Tiger-Website-Development-LTD/';">Our Official Site</button>
+    <button class="site-button" onclick="window.location.href='https://your-official-site-link.com';">Our Official Site</button>
 
     <!-- Main content container -->
     <div class="container">
         <h1>বয়স ক্যালকুলেটর</h1>
+        <p>আজকের তারিখ: <strong id="currentDate"></strong></p>
+        <p>বর্তমান সময়: <strong id="currentTime"></strong></p>
         <input type="date" id="dob" />
         <button onclick="calculateAge()">গণনা করুন</button>
 
-        <div class="result-box" id="result"></div>
-        <div class="result-box" id="timeDetails"></div>
-        <div class="result-box" id="nextBirthday"></div>
-        <div class="result-box" id="birthDetails"></div>
-        <div class="result-box" id="lastBirthday"></div>
+        <div class="result-box" id="result">লোডিং...</div>
+        <div class="result-box" id="timeDetails">লোডিং...</div>
+        <div class="result-box" id="nextBirthday">লোডিং...</div>
+        <div class="result-box" id="birthDetails">লোডিং...</div>
+        <div class="result-box" id="lastBirthday">লোডিং...</div>
     </div>
 
     <!-- Footer with developer info -->
@@ -172,11 +155,27 @@
     </div>
 
     <script>
+        // Show today's date
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
+
+        // Update current time every second (12-hour format with AM/PM)
+        function updateTime() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes().toString().padStart(2, '0');
+            var seconds = now.getSeconds().toString().padStart(2, '0');
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            document.getElementById('currentTime').innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+
+        setInterval(updateTime, 1000); // Update every second
+
         async function showResult(boxId, message) {
             const box = document.getElementById(boxId);
             box.innerHTML = `<p>${message}</p>`;
             box.style.display = "block";
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Delay for 1 second
         }
 
         async function calculateAge() {
@@ -188,6 +187,13 @@
 
             var birthDate = new Date(dob);
             var today = new Date();
+
+            // Show loading message
+            document.getElementById("result").style.display = "block";
+            document.getElementById("timeDetails").style.display = "block";
+            document.getElementById("nextBirthday").style.display = "block";
+            document.getElementById("birthDetails").style.display = "block";
+            document.getElementById("lastBirthday").style.display = "block";
 
             // Calculate age (years, months, days)
             var ageYears = today.getFullYear() - birthDate.getFullYear();
@@ -226,12 +232,22 @@
             }
             var lastBirthdayDayOfWeek = lastBirthdayDate.toLocaleString('bn-BD', { weekday: 'long' });
 
-            // Show results sequentially
-            await showResult("result", `আপনার বয়স: ${ageYears} বছর ${ageMonths} মাস ${ageDays} দিন`);
-            await showResult("timeDetails", `মোট সময় (ঘণ্টা): ${totalHours} ঘণ্টা<br>মোট সময় (মিনিট): ${totalMinutes} মিনিট<br>মোট সময় (সেকেন্ড): ${totalSeconds} সেকেন্ড<br>মোট দিন: ${totalDays} দিন`);
-            await showResult("nextBirthday", `পরবর্তী জন্মদিন: ${nextBirthday.toLocaleDateString('bn-BD')} (${nextBirthday.toLocaleString('bn-BD', { weekday: 'long' })})`);
-            await showResult("birthDetails", `আপনার জন্মদিন ছিল: ${birthDate.toLocaleDateString('bn-BD')} (${birthDayOfWeek})`);
-            await showResult("lastBirthday", `গত জন্মদিন ছিল: ${lastBirthdayDate.toLocaleDateString('bn-BD')} (${lastBirthdayDayOfWeek})`);
+            // Show results with 2-second delay and sequentially
+            setTimeout(async () => {
+                await showResult("result", `আপনার বয়স: ${ageYears} বছর ${ageMonths} মাস ${ageDays} দিন`);
+                setTimeout(async () => {
+                    await showResult("timeDetails", `মোট সময় (ঘণ্টা): ${totalHours} ঘণ্টা<br>মোট সময় (মিনিট): ${totalMinutes} মিনিট<br>মোট সময় (সেকেন্ড): ${totalSeconds} সেকেন্ড<br>মোট দিন: ${totalDays} দিন`);
+                    setTimeout(async () => {
+                        await showResult("nextBirthday", `আপনার পরবর্তী জন্মদিন: ${nextBirthday.toLocaleDateString('bn-BD')} (${birthDayOfWeek})`);
+                        setTimeout(async () => {
+                            await showResult("birthDetails", `আপনার জন্মদিনের দিন: ${birthDayOfWeek}`);
+                            setTimeout(async () => {
+                                await showResult("lastBirthday", `গত জন্মদিন: ${lastBirthdayDate.toLocaleDateString('bn-BD')} (${lastBirthdayDayOfWeek})`);
+                            }, 2000);
+                        }, 2000);
+                    }, 2000);
+                }, 2000);
+            }, 2000);
         }
     </script>
 </body>
