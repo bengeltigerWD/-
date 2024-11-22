@@ -137,7 +137,9 @@
         <h1>বয়স কত ?</h1>
         <p>আজকের তারিখ: <strong id="currentDate"></strong></p>
         <p>বর্তমান সময়: <strong id="currentTime"></strong></p>
-        <input type="text" id="dob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="(this.type='text')" />
+
+        <!-- Changed input field to text and added an event listener to format date -->
+        <input type="text" id="dob" placeholder="MM/DD/YYYY" />
         <button onclick="calculateAge()">গণনা করুন</button>
 
         <div class="result-box" id="result">লোডিং...</div>
@@ -186,20 +188,17 @@
 
         async function calculateAge() {
             var dob = document.getElementById("dob").value;
-            if (!dob) {
-                alert("দয়া করে আপনার জন্মতারিখ নির্বাচন করুন");
+
+            // Validate if date is entered in MM/DD/YYYY format
+            var regex = /^(0[1-9]|1[0-2])\/([0-2][0-9]|3[01])\/\d{4}$/;
+            if (!dob.match(regex)) {
+                alert("দয়া করে সঠিক MM/DD/YYYY[(01/02/2002)or,(01/14/2005)] ফরম্যাটে জন্মতারিখ লিখুন");
                 return;
             }
 
-            var birthDate = new Date(dob);
+            var dateParts = dob.split('/');
+            var birthDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
             var today = new Date();
-
-            // Show loading message
-            document.getElementById("result").style.display = "none";
-            document.getElementById("timeDetails").style.display = "none";
-            document.getElementById("nextBirthday").style.display = "none";
-            document.getElementById("birthDetails").style.display = "none";
-            document.getElementById("lastBirthday").style.display = "none";
 
             // Calculate age (years, months, days)
             var ageYears = today.getFullYear() - birthDate.getFullYear();
@@ -233,19 +232,13 @@
             // Birthday day of the week
             var birthDayOfWeek = birthDate.toLocaleString('bn-BD', { weekday: 'long' });
 
-            // Last birthday details
-            var lastBirthday = new Date(birthDate);
-            lastBirthday.setFullYear(today.getFullYear());
-            if (today < lastBirthday) {
-                lastBirthday.setFullYear(today.getFullYear() - 1);
-            }
+            var lastBirthday = new Date(today.getFullYear() - 1, birthDate.getMonth(), birthDate.getDate());
 
-            // Display results one after another with delay
-            await showResult("result", `আপনার বয়স: ${ageYears} বছর, ${ageMonths} মাস, ${ageDays} দিন`, 0);
-            await showResult("timeDetails", `আপনার জন্ম থেকে মোট সময়: ${totalHours} ঘণ্টা, ${totalMinutes} মিনিট, ${totalSeconds} সেকেন্ড`, 1000);
-            await showResult("nextBirthday", `আপনার পরবর্তী জন্মদিন: ${nextBirthday.toLocaleDateString('bn-BD')}, ${nextBirthday.toLocaleString('bn-BD', { weekday: 'long' })}`, 2000);
-            await showResult("birthDetails", `আপনার জন্মদিন ছিল: ${birthDate.toLocaleDateString('bn-BD')}, ${birthDayOfWeek}`, 3000);
-            await showResult("lastBirthday", `আপনার সর্বশেষ জন্মদিন ছিল: ${lastBirthday.toLocaleDateString('bn-BD')}, ${lastBirthday.toLocaleString('bn-BD', { weekday: 'long' })}`, 4000);
+            await showResult("result", `আপনার বয়স: ${ageYears} বছর ${ageMonths} মাস ${ageDays} দিন`, 1000);
+            await showResult("timeDetails", `আপনার বয়স মোট সময়: ${totalHours} ঘণ্টা ${totalMinutes} মিনিট ${totalSeconds} সেকেন্ড`, 2000);
+            await showResult("nextBirthday", `আপনার পরবর্তী জন্মদিন হবে: ${nextBirthday.toLocaleDateString('bn-BD')}`, 3000);
+            await showResult("birthDetails", `আপনার জন্মদিন ছিল: ${birthDate.toLocaleDateString('bn-BD')} (${birthDayOfWeek})`, 4000);
+            await showResult("lastBirthday", `আপনার শেষ জন্মদিন ছিল: ${lastBirthday.toLocaleDateString('bn-BD')}`, 5000);
         }
     </script>
 </body>
