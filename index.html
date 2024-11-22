@@ -35,7 +35,7 @@
             color: #00f2fe;
         }
 
-        input[type="date"] {
+        input[type="text"] {
             padding: 10px;
             width: calc(100% - 20px);
             margin: 10px 0;
@@ -112,7 +112,7 @@
                 font-size: 1.8rem;
             }
 
-            input[type="date"] {
+            input[type="text"] {
                 font-size: 0.9rem;
             }
 
@@ -137,7 +137,7 @@
         <h1>বয়স কত ?</h1>
         <p>আজকের তারিখ: <strong id="currentDate"></strong></p>
         <p>বর্তমান সময়: <strong id="currentTime"></strong></p>
-        <input type="date" id="dob" />
+        <input type="text" id="dob" placeholder="mm/dd/yyyy" onfocus="(this.type='date')" onblur="(this.type='text')" />
         <button onclick="calculateAge()">গণনা করুন</button>
 
         <div class="result-box" id="result">লোডিং...</div>
@@ -176,10 +176,12 @@
 
         setInterval(updateTime, 1000); // Update every second
 
-        async function showResult(boxId, message) {
+        async function showResult(boxId, message, delay) {
             const box = document.getElementById(boxId);
-            box.innerHTML = `<p>${message}</p>`;
-            box.style.display = "block";
+            setTimeout(() => {
+                box.innerHTML = `<p>${message}</p>`;
+                box.style.display = "block";
+            }, delay);
         }
 
         async function calculateAge() {
@@ -193,11 +195,11 @@
             var today = new Date();
 
             // Show loading message
-            document.getElementById("result").style.display = "block";
-            document.getElementById("timeDetails").style.display = "block";
-            document.getElementById("nextBirthday").style.display = "block";
-            document.getElementById("birthDetails").style.display = "block";
-            document.getElementById("lastBirthday").style.display = "block";
+            document.getElementById("result").style.display = "none";
+            document.getElementById("timeDetails").style.display = "none";
+            document.getElementById("nextBirthday").style.display = "none";
+            document.getElementById("birthDetails").style.display = "none";
+            document.getElementById("lastBirthday").style.display = "none";
 
             // Calculate age (years, months, days)
             var ageYears = today.getFullYear() - birthDate.getFullYear();
@@ -230,46 +232,21 @@
 
             // Birthday day of the week
             var birthDayOfWeek = birthDate.toLocaleString('bn-BD', { weekday: 'long' });
-            var lastBirthdayDate = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-            if (lastBirthdayDate > today) {
-                lastBirthdayDate.setFullYear(today.getFullYear() - 1);
-            }
-            var lastBirthdayDayOfWeek = lastBirthdayDate.toLocaleString('bn-BD', { weekday: 'long' });
 
-            // Show results with delays
-            setTimeout(async () => {
-                await showResult("result", `আপনার বয়স: ${ageYears} বছর, ${ageMonths} মাস, ${ageDays} দিন`);
-                setTimeout(async () => {
-                    await showResult("timeDetails", `মোট সময় (ঘণ্টা): ${totalHours} ঘণ্টা<br>মোট সময় (মিনিট): ${totalMinutes} মিনিট<br>মোট সময় (সেকেন্ড): ${totalSeconds} সেকেন্ড`);
-                    setTimeout(async () => {
-                        await showResult("nextBirthday", `পরবর্তী জন্মদিন: ${nextBirthday.toLocaleDateString('bn-BD')} (${nextBirthday.toLocaleString('bn-BD', { weekday: 'long' })})`);
-                        setTimeout(async () => {
-                            await showResult("birthDetails", `আপনার জন্মদিন ছিল: ${birthDayOfWeek}`);
-                            setTimeout(async () => {
-                                await showResult("lastBirthday", `গত জন্মদিন: ${lastBirthdayDate.toLocaleDateString('bn-BD')} (${lastBirthdayDayOfWeek})`);
-                            }, 1000);
-                        }, 1000);
-                    }, 1000);
-                }, 1000);
-            }, 1000);
+            // Last birthday details
+            var lastBirthday = new Date(birthDate);
+            lastBirthday.setFullYear(today.getFullYear());
+            if (today < lastBirthday) {
+                lastBirthday.setFullYear(today.getFullYear() - 1);
+            }
+
+            // Display results one after another with delay
+            await showResult("result", `আপনার বয়স: ${ageYears} বছর, ${ageMonths} মাস, ${ageDays} দিন`, 0);
+            await showResult("timeDetails", `আপনার জন্ম থেকে মোট সময়: ${totalHours} ঘণ্টা, ${totalMinutes} মিনিট, ${totalSeconds} সেকেন্ড`, 1000);
+            await showResult("nextBirthday", `আপনার পরবর্তী জন্মদিন: ${nextBirthday.toLocaleDateString('bn-BD')}, ${nextBirthday.toLocaleString('bn-BD', { weekday: 'long' })}`, 2000);
+            await showResult("birthDetails", `আপনার জন্মদিন ছিল: ${birthDate.toLocaleDateString('bn-BD')}, ${birthDayOfWeek}`, 3000);
+            await showResult("lastBirthday", `আপনার সর্বশেষ জন্মদিন ছিল: ${lastBirthday.toLocaleDateString('bn-BD')}, ${lastBirthday.toLocaleString('bn-BD', { weekday: 'long' })}`, 4000);
         }
     </script>
-    <!-- Default Statcounter code for Boyos-Koto
-https://bengeltigerwd.github.io/Boyos-Koto/ -->
-<script type="text/javascript">
-var sc_project=13063120; 
-var sc_invisible=1; 
-var sc_security="efa28cc3"; 
-</script>
-<script type="text/javascript"
-src="https://www.statcounter.com/counter/counter.js"
-async></script>
-<noscript><div class="statcounter"><a title="Web Analytics
-Made Easy - Statcounter" href="https://statcounter.com/"
-target="_blank"><img class="statcounter"
-src="https://c.statcounter.com/13063120/0/efa28cc3/1/"
-alt="Web Analytics Made Easy - Statcounter"
-referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
-<!-- End of Statcounter Code -->
 </body>
 </html>
